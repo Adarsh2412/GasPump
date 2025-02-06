@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package pumpservice;
+
+service PumpService {
+    rpc AuthenticatePump (PumpAuthRequest) returns (PumpAuthResponse);
+    rpc RequestFuel (FuelRequest) returns (FuelResponse);
+}
+
+service PaymentService {
+    rpc ProcessPayment (PaymentRequest) returns (PaymentResponse);
+}
+
+message PumpAuthRequest {
+    int32 pump_id = 1;
+    int32 passcode = 2;
+}
+
+message PumpAuthResponse {
+    bool authenticated = 1;
+    map<string, double> fuel_prices = 2;
+}
+
+message FuelRequest {
+    string fuel_type = 1;
+    double requested_liters = 2;
+    double payment_amount = 3;
+}
+
+message FuelResponse {
+    bool approved = 1;
+    string message = 2;
+}
+
+message PaymentRequest {
+    string payment_type = 1;  // "CASH" or "CREDIT_CARD"
+    double amount = 2;
+    int64 card_number = 3;
+}
+
+message PaymentResponse {
+    bool approved = 1;
+    string message = 2;
+}
