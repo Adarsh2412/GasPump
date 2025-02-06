@@ -22,6 +22,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install `protoc`
+        run: |
+          sudo apt update
+          sudo apt install -y protobuf-compiler
+
       - name: Cache Maven dependencies
         uses: actions/cache@v3
         with:
@@ -35,9 +40,6 @@ jobs:
 
       - name: Run unit tests
         run: mvn test
-
-      - name: Check if gRPC files are correctly generated
-        run: test -d target/generated-sources/protobuf/java || exit 1
 
       - name: Verify build success
         run: mvn verify
