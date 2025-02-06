@@ -22,10 +22,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install `protoc`
+      - name: Install `protoc` and `protoc-gen-grpc-java`
         run: |
           sudo apt update
           sudo apt install -y protobuf-compiler
+          PROTOC_VERSION=3.19.4
+          GRPC_VERSION=1.44.1
+          mkdir -p ~/protoc && cd ~/protoc
+          curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${GRPC_VERSION}/protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
+          chmod +x protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
+          sudo mv protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe /usr/local/bin/protoc-gen-grpc-java
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
