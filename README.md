@@ -49,7 +49,7 @@ Start the Credit Card Server
 ```sh
 make run-credit
 # Or manually:
-mvn exec:java -Dexec.mainClass="com.example.CreditCardServer"
+mvn exec:java -Dexec.mainClass="com.example.PaymentProcessingNode"
 ```
 Run Everything at Once
 ```sh
