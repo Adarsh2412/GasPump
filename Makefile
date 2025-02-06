@@ -1,7 +1,7 @@
 # Define the main Java classes for execution
 CENTRAL_NODE=com.example.CentralNode
 FUEL_PUMP=com.example.FuelPump
-CREDIT_CARD_SERVER=com.example.CreditCardServer
+CREDIT_CARD_SERVER=com.example.PaymentProcessingNode
 
 # Build the project
 .PHONY: build
