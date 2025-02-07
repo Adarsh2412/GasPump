@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Build and Test
 
 on:
   push:
@@ -13,45 +13,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
 
-      - name: Install `protoc` and `protoc-gen-grpc-java`
+      - name: Install Protobuf Compiler
         run: |
           sudo apt update
           sudo apt install -y protobuf-compiler
-          PROTOC_VERSION=3.19.4
-          GRPC_VERSION=1.44.1
-          mkdir -p ~/protoc && cd ~/protoc
-          curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${GRPC_VERSION}/protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
-          chmod +x protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
-          sudo mv protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe /usr/local/bin/protoc-gen-grpc-java
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Verify Protobuf Version
+        run: protoc --version
 
-      - name: Install dependencies and build
-        run: mvn clean install
+      - name: Build Project
+        run: mvn clean compile
 
-      - name: Run unit tests
+      - name: Run Unit Tests
         run: mvn test
 
-      - name: Verify build success
-        run: mvn verify
-
-      - name: Upload build artifacts
+      - name: Archive Test Results
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: GasPumpSystem-jar
+          name: test-results
+          path: target/surefire-reports/
+
+      - name: Build and Package JAR
+        run: mvn package
+
+      - name: Archive JAR File
+        uses: actions/upload-artifact@v4
+        with:
+          name: gas-pump-system
           path: target/*.jar
