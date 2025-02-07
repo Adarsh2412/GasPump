@@ -26,12 +26,21 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y protobuf-compiler
+          
+          # Download and install protoc-gen-grpc-java
           PROTOC_VERSION=3.19.4
           GRPC_VERSION=1.44.1
           mkdir -p ~/protoc && cd ~/protoc
-          curl -OL https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${GRPC_VERSION}/protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
+          curl -LO https://repo1.maven.org/maven2/io/grpc/protoc-gen-grpc-java/${GRPC_VERSION}/protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
           chmod +x protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe
           sudo mv protoc-gen-grpc-java-${GRPC_VERSION}-linux-x86_64.exe /usr/local/bin/protoc-gen-grpc-java
+
+          # Ensure protoc and plugin are executable
+          echo "✅ Installed protoc version:"
+          protoc --version
+          echo "✅ Checking protoc-gen-grpc-java"
+          ls -l /usr/local/bin/protoc-gen-grpc-java
+          chmod +x /usr/local/bin/protoc-gen-grpc-java
 
       - name: Cache Maven dependencies
         uses: actions/cache@v3
