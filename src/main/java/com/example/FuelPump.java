@@ -21,9 +21,21 @@ public class FuelPump {
     private boolean authenticated = false;
     private Map<String, Double> fuelPrices;
 
-    public FuelPump(String centralNodeAddress, String paymentServerAddress) {
-        this.pumpChannel = ManagedChannelBuilder.forTarget(centralNodeAddress).usePlaintext().build();
-        this.paymentChannel = ManagedChannelBuilder.forTarget(paymentServerAddress).usePlaintext().build();
+    // ✅ Constructor for Testing
+    public FuelPump(ManagedChannel pumpChannel, ManagedChannel paymentChannel,
+                PumpServiceGrpc.PumpServiceStub asyncStub, PaymentServiceGrpc.PaymentServiceStub paymentStub) {
+    this.pumpChannel = pumpChannel;
+    this.paymentChannel = paymentChannel;
+    this.asyncStub = asyncStub;
+    this.paymentStub = paymentStub;
+    this.scanner = new Scanner(System.in);
+}
+
+
+    // ✅ Constructor for Actual Execution
+    public FuelPump(String pumpAddress, String paymentAddress) {
+        this.pumpChannel = ManagedChannelBuilder.forTarget(pumpAddress).usePlaintext().build();
+        this.paymentChannel = ManagedChannelBuilder.forTarget(paymentAddress).usePlaintext().build();
         this.asyncStub = PumpServiceGrpc.newStub(pumpChannel);
         this.paymentStub = PaymentServiceGrpc.newStub(paymentChannel);
         this.scanner = new Scanner(System.in);
@@ -35,7 +47,7 @@ public class FuelPump {
 
         System.out.print("🔑 Enter Passcode (3-digit): ");
         int passcode = scanner.nextInt();
-        scanner.nextLine();
+        scanner.nextLine();  // ✅ Consume newline
 
         PumpAuthRequest authRequest = PumpAuthRequest.newBuilder()
                 .setPumpId(pumpId)
@@ -141,7 +153,7 @@ public class FuelPump {
             } else if (paymentType.equals("CREDIT_CARD")) {
                 System.out.print("💳 Enter card number: ");
                 long cardNumber = scanner.nextLong();
-                scanner.nextLine();
+                scanner.nextLine();  // ✅ Consume newline
                 paymentApproved = processCreditCardPayment(totalCost, cardNumber);
             } else {
                 System.out.println("❌ Invalid payment type. Try again.");
